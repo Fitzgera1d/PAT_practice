@@ -53,6 +53,7 @@ reverse(it, it2);
 next_permutation(it, it2);
 fill(it, it2, value);
 sort(it, it2[, cmp]);					// 可用于string, vector, deque, array
+max_element(it, it2);
 bool cmp(int a, int b) { return a > b; }
 lower_bound(first, last, val); upper_bound();	// 用于有序容器
 ```
