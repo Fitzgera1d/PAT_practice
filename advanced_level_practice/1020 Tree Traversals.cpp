@@ -1,58 +1,71 @@
 #include <bits/stdc++.h>
-#include <queue>
-using namespace std; 
+using namespace std;
 
-struct custom{
-	int window;
-	int time;
-	custom(int _w, int _t){
-		this->window = _w;
-		this->time = _t;
-	}
-	friend bool operator > (custom a, custom b){
-		if (a.time == b.time){
-			return a.window > b.window;
-		}
-		return a.time > b.time;
+vector<int> post_order, in_order;
+struct node{
+	int num;
+	node* left;
+	node* right;
+	node(int _num){
+		this->num = _num;
+		this->left = NULL;
+		this->right = NULL;
 	}
 };
 
+node* getSub(vector<int>::iterator mid, vector<int>::iterator left, vector<int>::iterator right) {
+	int _num = post_order[*mid];
+	vector<int>::iterator _mid;
+	node *temp = new node(_num);
+	if (mid != left) {
+		_mid = max_element(left, mid);
+		temp->left = getSub(_mid, left, mid);
+	}
+	if (mid != right - 1) {
+		_mid = max_element(mid + 1, right);
+		temp->right = getSub(_mid, mid+1, right);
+	}
+	return temp;
+}
+
+void releaseSub(node* temp) {
+	if (temp != NULL) {
+		releaseSub(temp->left);
+		releaseSub(temp->right);
+		delete temp;
+	}
+}
+
 int main() {
-	int n, m, k, q;
-	scanf("%d%d%d%d", &n, &m, &k, &q);
-	vector<int> customs(k);
-	vector<int> windows(n);
-	priority_queue<custom, vector<custom>, greater<custom> > lines;
-	for (int i = 0; i < k; i++){
-		int _time, j;
-		scanf("%d", &_time);
-		if (i < m * n){
-			j = i % n;
-		} else {
-			custom cus = lines.top();
-			lines.pop();
-			j = cus.window;
-		}
-		windows[j] += _time;
-		if ((windows[j] - _time) < 540){
-			customs[i] = windows[j];
-		} else {
-			customs[i] = 600;
-		}
-		lines.push(custom(j, windows[j]));
+	int n, _num;
+	scanf("%d", &n);
+	post_order.resize(n);
+	queue<node*> nq;
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &post_order[i]);
 	}
-	
-	for (int i = 0; i < q; i++){
-		int _custom;
-		scanf("%d", &_custom);
-		int t = customs[_custom - 1];
-		if(t >= 600) {
-			printf("Sorry\n");
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &_num);
+		in_order.push_back(find(post_order.begin(), post_order.end(), _num) - post_order.begin());
+	}
+	node *tree = getSub(max_element(in_order.begin(), in_order.end()), in_order.begin(), in_order.end());
+	nq.push(tree);
+	while (!nq.empty()) {
+		node *temp = nq.front();
+		nq.pop();
+		printf("%d", temp->num);
+		if (temp->left != NULL) {
+			nq.push(temp->left);
+		}
+		if (temp->right != NULL) {
+			nq.push(temp->right);
+		}
+		if (!nq.empty()) {
+			printf(" ");
 		} else {
-			int _h = 8 + t / 60;
-			int _m = t % 60;
-			printf("%02d:%02d\n", _h, _m);
+			printf("\n");
 		}
 	}
+	releaseSub(tree);
 	return 0;
 }
