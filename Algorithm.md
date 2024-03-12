@@ -17,7 +17,7 @@ delete(p);
 | `char`      | `%c`       | 可读` `、`\n` |
 | `string`    | `%s`       | `%%`、`\\`    |
 
-- `getchar/putchar`：可读换行符、`gets/puts`
+- `getchar/putchar`：可读换行符、~~`gets/puts`不可用、~~`fgets(char*, int, stdin)`会读入换行符
 - `sscanf`、`sprintf`
 ### `#include <math.h>`
 - `fabs/abs`、`floor/ceil/round`
